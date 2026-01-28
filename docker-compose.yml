@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  # Nginx Cache Proxy (port 8080)
+  cache:
+    image: nginx:1.25-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - cache_data:/var/cache/nginx
+    depends_on:
+      - origin
+
+  # Origin Server (port 3000)
+  origin:
+    build: ./origin
+    ports:
+      - "3000:3000"
+    environment:
+      - DELAY_MS=500  # 응답 지연 시뮬레이션 (캐시 효과 체감용)
+
+volumes:
+  cache_data:
