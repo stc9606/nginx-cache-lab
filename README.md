@@ -33,8 +33,8 @@ curl -I http://localhost:8080/api/data  # HIT
 | Lab | 주제 | 배우는 것 |
 |-----|------|----------|
 | [Lab 1](./labs/lab1-setup/) | 환경 구성 | Docker Compose, 프록시 기본 동작 |
-| Lab 2 | 캐시 HIT/MISS | proxy_cache, 캐시 저장소 구조 |
-| Lab 3 | TTL과 만료 정책 | proxy_cache_valid, Cache-Control |
+| [Lab 2](./labs/lab2-ttl/) | TTL과 캐시 만료 | proxy_cache_valid, Cache-Control 우선순위 |
+| Lab 3 | 캐시 키 설계 | proxy_cache_key, 적중률 최적화 |
 
 ### Week 3-4: 실전 패턴
 
@@ -65,7 +65,8 @@ nginx-cache-lab/
 │   ├── package.json
 │   └── app.js              # Origin API 서버
 └── labs/
-    └── lab1-setup/         # 실습 가이드
+    ├── lab1-setup/         # 환경 구성
+    └── lab2-ttl/           # TTL과 캐시 만료
 ```
 
 ## 주요 엔드포인트
@@ -75,6 +76,8 @@ nginx-cache-lab/
 | `GET /api/data` | 기본 API | O (10분) |
 | `GET /api/users/:id` | 사용자 조회 | O (10분) |
 | `GET /api/slow` | 느린 응답 (2초) | O (10분) |
+| `GET /api/short-ttl` | 짧은 TTL (5초) | O (5초, Cache-Control) |
+| `GET /api/no-cache` | 캐시 안 함 | X (no-store) |
 | `GET /health` | 헬스체크 | X |
 | `GET /stats` | Origin 통계 | X |
 
