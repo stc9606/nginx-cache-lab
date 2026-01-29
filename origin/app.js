@@ -49,6 +49,38 @@ app.get('/api/slow', async (req, res) => {
     });
 });
 
+// --- Lab 2: TTL 실습용 엔드포인트 ---
+
+// Origin이 Cache-Control 헤더를 직접 설정하는 케이스
+app.get('/api/short-ttl', async (req, res) => {
+    requestCount++;
+    console.log(`[Origin] /api/short-ttl 요청 #${requestCount}`);
+
+    await delay(DELAY_MS);
+
+    res.set('Cache-Control', 'public, max-age=5');  // 5초만 캐시
+    res.json({
+        message: 'Short TTL response (5s)',
+        timestamp: new Date().toISOString(),
+        requestNumber: requestCount
+    });
+});
+
+// Origin이 캐시하지 말라고 지정하는 케이스
+app.get('/api/no-cache', async (req, res) => {
+    requestCount++;
+    console.log(`[Origin] /api/no-cache 요청 #${requestCount}`);
+
+    await delay(DELAY_MS);
+
+    res.set('Cache-Control', 'no-store');
+    res.json({
+        message: 'This should not be cached',
+        timestamp: new Date().toISOString(),
+        requestNumber: requestCount
+    });
+});
+
 // 헬스체크
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', requestCount });
