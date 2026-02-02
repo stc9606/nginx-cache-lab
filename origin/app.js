@@ -49,6 +49,48 @@ app.get('/api/slow', async (req, res) => {
     });
 });
 
+// --- Lab 3: 캐시 키 실습용 엔드포인트 ---
+
+// 쿼리스트링에 따라 같은 결과를 반환하는 API (검색)
+app.get('/api/products', async (req, res) => {
+    requestCount++;
+    const category = req.query.category || 'all';
+    const sort = req.query.sort || 'default';
+    const tracking = req.query.utm_source;  // 추적용 파라미터 (결과에 영향 없음)
+
+    console.log(`[Origin] /api/products?category=${category}&sort=${sort} 요청 #${requestCount}`);
+
+    await delay(DELAY_MS);
+
+    res.json({
+        category,
+        sort,
+        products: [
+            { id: 1, name: `${category} Product A`, price: 10000 },
+            { id: 2, name: `${category} Product B`, price: 20000 },
+        ],
+        timestamp: new Date().toISOString(),
+        requestNumber: requestCount
+    });
+});
+
+// 사용자별 다른 응답을 반환하는 API
+app.get('/api/profile', async (req, res) => {
+    requestCount++;
+    const userId = req.headers['x-user-id'] || 'anonymous';
+    console.log(`[Origin] /api/profile (user: ${userId}) 요청 #${requestCount}`);
+
+    await delay(DELAY_MS);
+
+    res.json({
+        userId,
+        name: `User ${userId}`,
+        theme: userId === 'anonymous' ? 'default' : 'custom',
+        timestamp: new Date().toISOString(),
+        requestNumber: requestCount
+    });
+});
+
 // --- Lab 2: TTL 실습용 엔드포인트 ---
 
 // Origin이 Cache-Control 헤더를 직접 설정하는 케이스
